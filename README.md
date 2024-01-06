@@ -4,7 +4,7 @@ I was never a comm student, but this is what I imagine they do.
 
 ## About
 
-This repo contains a collection of scripts that pull Company SEC filing data. This data comes directly from the sec.gov website.
+This repo contains a collection of scripts that pull Company SEC filing data. This data comes directly from the [sec.gov](www.sec.gov) website.
 
 # Getting Started
 
@@ -30,7 +30,7 @@ pip install -r requirements.txt
 
 # Usage
 
-## Get Company 10-Q Section 1, Part 2
+### Company 10-Q Section 1, Part 2
 
 This script will download and print the second part of the first section of a company's most recent 10-Q filing.
 
