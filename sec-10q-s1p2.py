@@ -61,10 +61,13 @@ def extract_divs_between_markers(html_content, start_marker, end_marker):
             divs_between_markers.append(div)
     return divs_between_markers
 
+def format_results(results):
+    TOC_pattern = re.compile(re.escape('table of contents'), re.IGNORECASE)
+    return TOC_pattern.sub("", results)
 
 def extract_results(ticker="aapl"):
     cik = "000" +lookup_cik(ticker)
-
+    results = ''
     _, doc_response = fetch_latest_10q(cik, headers, ticker)
 
     if doc_response and doc_response.status_code == 200:
@@ -83,10 +86,11 @@ def extract_results(ticker="aapl"):
         if divs_between_markers:
             print("Item 2. Management’s Discussion and Analysis of Financial Condition and Results of Operations")
             for div in divs_between_markers:
-                print(div.text)
-                continue
+                results += " \n" + div.text
         else:
             print("Unable to scrape section-1 part-1 No divs found between the markers.")
+
+        results = (format_results(results))
 
     else:
         print(f"Failed to fetch or save the document. HTTP status code: {doc_response.status_code if doc_response else 'N/A'}")
