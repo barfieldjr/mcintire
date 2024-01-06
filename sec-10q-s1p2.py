@@ -68,7 +68,7 @@ def extract_results(ticker="aapl"):
     _, doc_response = fetch_latest_10q(cik, headers, ticker)
 
     if doc_response and doc_response.status_code == 200:
-        filename = "./temp/tester1.html"
+        filename = "./temp/filing.html"
         with open(filename, 'wb') as file:
             file.write(doc_response.content)
 
