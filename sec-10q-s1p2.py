@@ -4,12 +4,10 @@ from bs4 import BeautifulSoup
 from cik_lookup import lookup_cik
 import sys
 
-# Set up the headers with a proper User-Agent
 headers = {
-    'User-Agent': 'Your Name or Application (your.email@example.com)'  # Replace with your actual info
+    'User-Agent': 'Your Name or Application (your.email@example.com)'  
 }
 
-# Function to fetch the latest 10-Q filing
 def fetch_latest_10q(cik, headers, ticker):
     submissions_url = f"https://data.sec.gov/submissions/CIK{cik}.json"
     submissions_response = requests.get(submissions_url, headers=headers)
@@ -24,7 +22,6 @@ def fetch_latest_10q(cik, headers, ticker):
             return fetch_document(index_url, headers, ticker)
     return None, None
 
-# Function to fetch the document from the index URL
 def fetch_document(index_url, headers, ticker):
     ticker = ticker+'-'
     index_response = requests.get(index_url, headers=headers)
@@ -38,9 +35,7 @@ def fetch_document(index_url, headers, ticker):
     return None, None
 
 def extract_divs_between_markers(html_content, start_marker, end_marker):
-    # Convert markers to regex patterns
     def marker_to_regex(marker):
-        # Escape alphanumeric characters, replace non-alphanumeric with regex for optional space and any non-alphanumeric
         return re.compile("".join([r"\s*" + re.escape(char) + r"\s*" if char.isalnum() else r"\s*[^a-zA-Z0-9]*\s*" for char in marker]), re.IGNORECASE)
 
     start_pattern = marker_to_regex(start_marker)
@@ -49,7 +44,7 @@ def extract_divs_between_markers(html_content, start_marker, end_marker):
     soup = BeautifulSoup(html_content, 'html.parser')
     divs_between_markers = []
     found_start_marker = False
-    first_occurrence_passed = False  # Flag to indicate that the first occurrence has been found
+    first_occurrence_passed = False 
 
     for div in soup.find_all('div'):
         div_text = div.get_text()
@@ -66,7 +61,7 @@ def extract_divs_between_markers(html_content, start_marker, end_marker):
             divs_between_markers.append(div)
     return divs_between_markers
 
-# Main execution
+
 def extract_results(ticker="aapl"):
     cik = "000" +lookup_cik(ticker)
 
@@ -77,18 +72,14 @@ def extract_results(ticker="aapl"):
         with open(filename, 'wb') as file:
             file.write(doc_response.content)
 
-        # The start and end markers with HTML entities unescaped
         start_marker = 'Item 2.Management’s Discussion and Analysis of Financial Condition and Results of Operations'
         end_marker = 'ITEM 3.QUANTITATIVE AND QUALITATIVE DISCLOSURES ABOUT MARKET RISK'
 
-        # Read the HTML content from the file
         with open(filename, 'r', encoding='utf-8') as file:
             html_content = file.read()
 
-        # Extract divs between markers
         divs_between_markers = extract_divs_between_markers(html_content, start_marker, end_marker)
         
-        # Print extracted divs
         if divs_between_markers:
             print("Item 2. Management’s Discussion and Analysis of Financial Condition and Results of Operations")
             for div in divs_between_markers:
