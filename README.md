@@ -1,6 +1,10 @@
-# McIntire
+# Free McIntire
 
 I was never a comm student, but this is what I imagine they do.
+
+## About
+
+This repo contains a collection of scripts that pull Company SEC filing data. This data comes directly from the sec.gov website.
 
 # Getting Started
 
