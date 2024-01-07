@@ -1,8 +1,10 @@
 import requests
 import re
 from bs4 import BeautifulSoup
-from cik_lookup import lookup_cik
+
 import sys
+import os
+from mcintire.cik_lookup import lookup_cik
 
 headers = {
     'User-Agent': 'Your Name or Application (your.email@example.com)'  
@@ -10,6 +12,7 @@ headers = {
 
 def fetch_latest_10q(cik, headers, ticker):
     submissions_url = f"https://data.sec.gov/submissions/CIK{cik}.json"
+
     submissions_response = requests.get(submissions_url, headers=headers)
     if submissions_response.status_code == 200:
         data = submissions_response.json()
@@ -69,6 +72,14 @@ def clean_and_format_text(input_text):
     return cleaned.strip()
 
 def extract_results(ticker="aapl"):
+    ticker = ticker.lower()
+
+    # Inside your extract_results function, before opening the file:
+    temp_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'temp')
+    os.makedirs(temp_dir, exist_ok=True)
+    filename = os.path.join(temp_dir, 'filing.html')
+
+
     cik = lookup_cik(ticker)
     cik = "0" * (10 - len(cik)) + cik
     results = ''
@@ -76,12 +87,11 @@ def extract_results(ticker="aapl"):
     _, doc_response = fetch_latest_10q(cik, headers, ticker)
 
     if doc_response and doc_response.status_code == 200:
-        filename = "./temp/filing.html"
         with open(filename, 'wb') as file:
-            file.write(doc_response.content)
+                    file.write(doc_response.content)
 
         start_marker = 'Item 2.Management’s Discussion and Analysis of Financial Condition and Results of Operations'
-        end_marker = 'ITEM 3.QUANTITATIVE AND QUALITATIVE DISCLOSURES ABOUT MARKET RISK'
+        end_marker = 'Item 3.Quantitative and Qualitative Disclosures About Market Risk'
 
         with open(filename, 'r', encoding='utf-8') as file:
             html_content = file.read()
@@ -89,14 +99,13 @@ def extract_results(ticker="aapl"):
         divs_between_markers = extract_divs_between_markers(html_content, start_marker, end_marker)
         
         if divs_between_markers:
-            print("Item 2. Management’s Discussion and Analysis of Financial Condition and Results of Operations")
+            results += "Item 2. Management’s Discussion and Analysis of Financial Condition and Results of Operations"
             for div in divs_between_markers:
                 results += " \n" + div.text
         else:
             print("Unable to scrape section-1 part-1 No divs found between the markers.")
 
-        results = clean_and_format_text(results)
-        print(results)
+        return clean_and_format_text(results)
 
     else:
         print(f"Failed to fetch or save the document. HTTP status code: {doc_response.status_code if doc_response else 'N/A'}")

@@ -3,8 +3,8 @@ import sys
 import os
 
 def get_earnings(date):
-    script_dir = os.path.dirname(__file__)  # get the directory of the current script
-    file_path = os.path.join(script_dir, 'data/earnings_data.json')  # join it with the relative path
+    script_dir = os.path.dirname(__file__)  
+    file_path = os.path.join(script_dir, 'data/earnings_data.json')  
 
     with open(file_path) as f:
         data = json.load(f)
