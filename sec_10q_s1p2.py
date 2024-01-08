@@ -113,6 +113,6 @@ def extract_results(ticker="aapl"):
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         ticker = sys.argv[1]
-        extract_results(ticker)
+        print(extract_results(ticker))
     else:
         print("Please provide a ticker symbol as a command line argument.")
